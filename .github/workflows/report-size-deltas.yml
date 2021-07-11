@@ -1,0 +1,13 @@
+name: Report PR Size Deltas
+
+on:
+  schedule:
+    - cron:  '*/5 * * * *'
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment size deltas reports to PRs
+        uses: per1234/actions/libraries/report-size-deltas@08aa4fea12ce229a1def6da8c6ca09e27a4e3dfb

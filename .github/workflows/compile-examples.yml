@@ -1,0 +1,152 @@
+name: Compile Examples
+
+on: [pull_request, push]
+
+jobs:
+  compile-test:
+    runs-on: ubuntu-latest
+
+    env:
+      # libraries to install for all boards
+      UNIVERSAL_LIBRARIES: '"MFRC522" "Keyboard" "Mouse" "Servo" "LiquidCrystal" "CapacitiveSensor"'
+      # sketch paths to compile (recursive) for all boards
+      UNIVERSAL_SKETCH_PATHS: '"/github/home/Arduino/libraries/MFRC522/examples" "extras/shared/examples"' # "extras/shared/examples/01.Basics/AnalogReadSerial"'
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        board: [
+          {"fqbn": "arduino:avr:yun", "type": "usb"},
+          {"fqbn": "arduino:avr:uno", "type": "normal"},
+          {"fqbn": "arduino:avr:diecimila", "type": "normal"},
+          {"fqbn": "arduino:avr:nano", "type": "normal"},
+          {"fqbn": "arduino:avr:mega", "type": "MultiSerial"},  #:cpu=atmega2560
+          {"fqbn": "arduino:avr:megaADK", "type": "MultiSerial"},
+          {"fqbn": "arduino:avr:leonardo", "type": "usb"},
+          {"fqbn": "arduino:avr:leonardoeth", "type": "usb"},
+          {"fqbn": "arduino:avr:micro", "type": "usb"},
+          {"fqbn": "arduino:avr:esplora", "type": "usb"},
+          {"fqbn": "arduino:avr:mini", "type": "normal"},
+          {"fqbn": "arduino:avr:ethernet", "type": "normal"},
+          {"fqbn": "arduino:avr:fio", "type": "normal"},
+          {"fqbn": "arduino:avr:bt", "type": "normal"},
+          {"fqbn": "arduino:avr:LilyPadUSB", "type": "usb"},
+          {"fqbn": "arduino:avr:lilypad", "type": "normal"},
+          {"fqbn": "arduino:avr:pro", "type": "normal"},
+          #"arduino:avr:atmegang",
+          {"fqbn": "arduino:avr:robotControl", "type": "control"},
+          {"fqbn": "arduino:avr:robotMotor", "type": "control"},
+          #"arduino:avr:gemma",
+          {"fqbn": "arduino:avr:circuitplay32u4cat", "type": "usb"},
+          {"fqbn": "arduino:avr:yunmini", "type": "usb"},
+          {"fqbn": "arduino:avr:chiwawa", "type": "usb"},
+          {"fqbn": "arduino:avr:one", "type": "usb"},
+          {"fqbn": "arduino:avr:unowifi", "type": "normal"}
+        ]
+
+        # make board type-specific customizations to the matrix jobs
+        include:
+          # normal boards
+          - board:
+              type: "normal"
+            additional-sketch-paths: '"libraries" "extras/shared/Blink" "extras/shared/BlinkWithoutDelay" "~/Arduino/libraries/Servo/examples" "~/Arduino/libraries/LiquidCrystal/examples" "~/Arduino/libraries/Ethernet/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" ~/Arduino/libraries/Firmata/examples/StandardFirmataPlus" "~/Arduino/libraries/Firmata/examples/StandardFirmataEthernet" "~/Arduino/libraries/Firmata/examples/StandardFirmata" "~/Arduino/libraries/Firmata/examples/SimpleDigitalFirmata" "~/Arduino/libraries/Firmata/examples/SimpleAnalogFirmata" "~/Arduino/libraries/Firmata/examples/ServoFirmata" "~/Arduino/libraries/Firmata/examples/OldStandardFirmata" "~/Arduino/libraries/Firmata/examples/EchoString" "~/Arduino/libraries/Firmata/examples/AnalogFirmata" "~/Arduino/libraries/Firmata/examples/AllInputsFirmata" "~/Arduino/libraries/Arduino_LSM9DS1/examples" "~/Arduino/libraries/Arduino_JSON/examples"'
+          # MultiSerial boards
+          - board:
+              type: "MultiSerial"
+            additional-sketch-paths: '"libraries" "extras/shared/Blink" "extras/shared/BlinkWithoutDelay" "extras/shared/MultiSerial" "extras/shared/SerialPassthrough" "~/Arduino/libraries/Servo/examples" "~/Arduino/libraries/LiquidCrystal/examples" "~/Arduino/libraries/Ethernet/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" ~/Arduino/libraries/Firmata/examples/StandardFirmataPlus" "~/Arduino/libraries/Firmata/examples/StandardFirmataEthernet" "~/Arduino/libraries/Firmata/examples/StandardFirmata" "~/Arduino/libraries/Firmata/examples/SimpleDigitalFirmata" "~/Arduino/libraries/Firmata/examples/SimpleAnalogFirmata" "~/Arduino/libraries/Firmata/examples/ServoFirmata" "~/Arduino/libraries/Firmata/examples/OldStandardFirmata" "~/Arduino/libraries/Firmata/examples/EchoString" "~/Arduino/libraries/Firmata/examples/AnalogFirmata" "~/Arduino/libraries/Firmata/examples/AllInputsFirmata" "~/Arduino/libraries/Arduino_LSM9DS1/examples" "~/Arduino/libraries/Arduino_JSON/examples"'
+          # USB boards
+          - board:
+              type: "usb"
+            additional-sketch-paths: '"libraries" "extras/shared/Blink" "extras/shared/BlinkWithoutDelay" "extras/shared/MultiSerial" "extras/shared/SerialPassthrough" "extras/shared/09.USB" "~/Arduino/libraries/Keyboard/examples/Serial" "~/Arduino/libraries/Servo/examples" "~/Arduino/libraries/LiquidCrystal/examples" "~/Arduino/libraries/Ethernet/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" "~/Arduino/libraries/SD/examples" "~/Arduino/libraries/WiFi/examples" ~/Arduino/libraries/Firmata/examples/StandardFirmataPlus" "~/Arduino/libraries/Firmata/examples/StandardFirmataEthernet" "~/Arduino/libraries/Firmata/examples/StandardFirmata" "~/Arduino/libraries/Firmata/examples/SimpleDigitalFirmata" "~/Arduino/libraries/Firmata/examples/SimpleAnalogFirmata" "~/Arduino/libraries/Firmata/examples/ServoFirmata" "~/Arduino/libraries/Firmata/examples/OldStandardFirmata" "~/Arduino/libraries/Firmata/examples/EchoString" "~/Arduino/libraries/Firmata/examples/AnalogFirmata" "~/Arduino/libraries/Firmata/examples/AllInputsFirmata" "~/Arduino/libraries/Arduino_LSM9DS1/examples" "~/Arduino/libraries/Arduino_JSON/examples"'
+          # RobotMotorControl boards
+          - board:
+              type: "control"
+            additional-sketch-paths: '"libraries/Wire" "libraries/SPI" "libraries/EEPROM" "extras/shared/MultiSerial" "extras/shared/SerialPassthrough" "extras/shared/09.USB"'
+          
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2 
+
+      # The source files are in a subfolder of the ArduinoCore-API repository, so it's not possible to clone it directly to the final destination in the core
+      - name: Checkout ArduinoCore-API
+        uses: actions/checkout@v2
+        with:
+          repository: arduino/ArduinoCore-API
+          path: extras/ArduinoCore-API
+
+      - name: Install ArduinoCore-API
+        run: mv "$GITHUB_WORKSPACE/extras/ArduinoCore-API/api" "$GITHUB_WORKSPACE/cores/arduino"   
+
+      - name: Checkout Adafruit WiFiNINA
+        uses: actions/checkout@v2
+        with:
+          repository: adafruit/WiFiNINA
+          path: adafruit/WiFiNINA
+
+      - name: Compile examples
+        uses: per1234/actions/libraries/compile-examples@08aa4fea12ce229a1def6da8c6ca09e27a4e3dfb
+        with:
+          fqbn: ${{ matrix.board.fqbn }}
+          libraries: |
+            - name: MFRC522
+            - source-url: https://github.com/arduino-libraries/Keyboard.git
+            - name: Mouse
+            - name: Servo
+            - name: LiquidCrystal
+            - name: CapacitiveSensor
+            - name: Ethernet
+            - name: ArduinoBearSSL
+            - name: Arduino_APDS9960
+            - name: Servo
+            - name: Arduino_LSM9DS1
+            - name: ArduinoHttpClient
+            - name: NTPClient
+            - name: TFT
+            - name: ArduinoMqttClient
+            - name: Arduino_CRC32
+            - name: Arduino_LSM6DS3
+            - name: Stepper
+            - name: SD
+            - name: WiFi101
+            - name: Arduino_JSON
+            - name: Arduino_HTS221
+            - name: Firmata
+            - name: ArduinoMotorCarrier
+            - name: ArduinoCloudThing
+            - name: Arduino_DebugUtils
+            - name: WiFi Link
+            - name: 9 Axes Motion
+            - name: Arduino_LPS22HB
+            - name: CTC GO MOTIONS
+            - name: ArduinoModbus
+            - name: ArduinoIoTCloudBearSSL
+            - name: ArduinoDMX
+            - name: ArduinoRS485
+            - name: Arduino_OAuth
+            - name: CTC GO CORE
+            - name: WiFi
+            - name: ArduinoMDNS
+            - name: Bridge
+            - name: Temboo
+            - name: ArduinoCloud
+            - name: Madgwick
+            #- source-url: https://github.com/giulcioffi/ArduinoCore-avr.git
+            #  version: namespaced_api
+            #  source-path: cores/arduino
+          platforms: |
+            # Use Board Manager to install the latest release of Arduino megaAVR Boards to get the toolchain
+            - name: "arduino:avr"
+            # Overwrite the Board Manager installation with the local platform
+            - source-path: "./"
+              name: "arduino:avr"
+          sketch-paths: "${{ env.UNIVERSAL_SKETCH_PATHS }} ${{ matrix.additional-sketch-paths }}"
+          enable-size-deltas-report: 'true'
+          verbose: 'true'
+
+      - name: Save memory usage change report as artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v1
+        with:
+          name: 'size-deltas-reports'
+          path: 'size-deltas-reports'
